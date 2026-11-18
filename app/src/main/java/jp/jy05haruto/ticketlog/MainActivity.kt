@@ -15,7 +15,7 @@ import java.io.File
 
 // Ticket photos are stored in the app-private files directory, not shared media storage.
 // Build marker: include the latest ticket-management web app changes.
-// Build marker: latest web app UI (recent tickets latest three).
+// Build marker: latest web app UI (search-gated ticket list, reset on empty search).
 class MainActivity : Activity() {
     private lateinit var webView: WebView
     private var fileCallback: ValueCallback<Array<Uri>>? = null
@@ -93,7 +93,7 @@ class MainActivity : Activity() {
         }
         setContentView(webView)
         if (savedInstanceState == null) {
-            webView.loadUrl("https://jy05haruto.github.io/ticket-management/?v=20261118-4")
+            webView.loadUrl("https://jy05haruto.github.io/ticket-management/?v=20261118-5")
         } else {
             webView.restoreState(savedInstanceState)
         }
