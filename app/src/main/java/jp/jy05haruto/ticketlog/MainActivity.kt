@@ -14,6 +14,7 @@ import android.util.Base64
 import java.io.File
 
 // Ticket photos are stored in the app-private files directory, not shared media storage.
+// Build marker: include the latest ticket-management web app changes.
 class MainActivity : Activity() {
     private lateinit var webView: WebView
     private var fileCallback: ValueCallback<Array<Uri>>? = null
