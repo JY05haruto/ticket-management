@@ -126,7 +126,7 @@ class MainActivity : Activity() {
         }
         setContentView(webView)
         if (savedInstanceState == null) {
-            webView.loadUrl("https://jy05haruto.github.io/ticket-management/?v=20261118-9")
+            webView.loadUrl("https://jy05haruto.github.io/ticket-management/?v=20261119-1")
         } else {
             webView.restoreState(savedInstanceState)
         }
