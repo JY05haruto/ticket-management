@@ -62,7 +62,7 @@ h1{font-size:18px}
 
 <div class="actions"><button class="btn primary" id="addBtn">＋ 切符を追加</button><div class="filelinks"><button class="btn" id="backupBtn">↓ バックアップ</button><button class="btn" id="restoreBtn">↑ 復元</button></div><input id="restoreFile" type="file" accept="application/json" class="hidden"></div>
 <section class="home-recent"><h2>最近追加した切符 <span>最新3件</span></h2><div id="recentTickets" class="grid"><div class="empty">まだ切符が登録されていません。</div></div></section>
-<nav class="tabs" id="tabs"><button class="tab active" data-tab="all">すべて</button><button class="tab" data-tab="company">会社別</button><button class="tab" data-tab="place">発行場所別</button><button class="tab" data-tab="overseas">海外切符</button></nav>
+
 <section class="panel"><h3 id="listHeading">切符一覧</h3><div class="filters"><input id="search" placeholder="会社・駅・国・メモなどで検索"><select id="typeFilter"><option value="">すべての種類</option><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select><select id="sort"><option value="new">登録順</option><option value="date">利用日順</option><option value="price">金額順</option></select></div></section>
 <div id="ticketList" class="grid"><div class="empty">まだ切符が登録されていません。<br>「切符を追加」からコレクションを作りましょう。</div></div>
 
@@ -70,9 +70,9 @@ h1{font-size:18px}
 </div>
 <div id="modal" class="modal hidden"><div class="dialog"><div class="dialog-head"><h3 id="formTitle">切符を追加</h3><button class="btn" id="closeModal">閉じる</button></div><form id="ticketForm"><input type="hidden" id="ticketId"><div class="formgrid">
 <div class="field"><label>国内・海外</label><select id="region"><option value="国内">国内</option><option value="海外">海外</option></select></div>
-<div class="field"><label>切符の種類 *</label><select id="type" required><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select></div>
-<div class="field"><label>鉄道会社 *</label><input id="company" required placeholder="例：相模鉄道"><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
-<div class="field"><label>区間・券面の名称</label><input id="route" placeholder="例：横浜 → 海老名"></div>
+<div class="field"><label>切符の種類</label><select id="type" required><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select></div>
+<div class="field"><label>鉄道会社</label><input id="company" required placeholder="例：相模鉄道"><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
+<div class="field"><label>区間</label><input id="route" placeholder="例：横浜 → 海老名"></div>
 <div class="field"><label>列車名</label><input id="trainName" placeholder="例：特急○○号"></div>
 <div class="field"><label>席種</label><input id="seatType" placeholder="例：指定席・自由席・グリーン車"></div>
 <div class="field"><label>ネット予約</label><select id="reservationService"><option value="">該当なし</option><option>えきねっと</option><option>e5489</option><option>EX予約</option></select></div>
@@ -82,7 +82,7 @@ h1{font-size:18px}
 <div class="field"><label>利用日</label><input id="date" type="date"></div>
 <div class="field"><label>金額（円換算可）</label><input id="price" type="number" min="0" step="1" placeholder="例：480"></div>
 <div class="field wide"><label>メモ</label><textarea id="memo" placeholder="購入場所、思い出、補足など"></textarea></div>
-<div class="field wide"><label>切符の写真（表・裏・複数枚可）</label><input id="photos" type="file" accept="image/*" capture="environment" multiple><div class="notice">写真はアプリ内に保存されます。画像は端末容量を使用します。</div></div>
+<div class="field wide"><label>切符の写真（表・裏・複数枚可）</label><input id="photos" type="file" accept="image/*" multiple></div>
 
 </div><div class="actions"><button class="btn primary" type="submit">保存する</button><button class="btn" type="button" id="cancelBtn">キャンセル</button></div></form></div>
 </div>
@@ -97,9 +97,9 @@ function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 function kanaSort(a,b){return a.localeCompare(b,'ja')}
 function photoSrc(p){return p.file&&window.AndroidPhotoStore?AndroidPhotoStore.getPhoto(p.file):(p.data||'')}
 function ticketCard(t){return '<article class="ticket"><span class="pill">'+esc(t.type)+'</span><span class="pill">'+esc(t.region)+'</span><h4>'+esc(t.route||t.company||'名称未設定')+'</h4><div class="meta"><b>'+esc(t.company)+'</b><br>ネット予約：'+esc(t.reservationService||'該当なし')+'<br>発行場所：'+esc(t.place||'未設定')+(t.region==='海外'?'<br>国・地域：'+esc(t.country||'未設定'):'')+'<br>券売機：'+esc(t.machine||'未設定')+'<br>列車名：'+esc(t.trainName||'未設定')+'<br>席種：'+esc(t.seatType||'未設定')+'<br>利用日：'+esc(t.date||'未設定')+'　金額：'+(t.price?Number(t.price).toLocaleString()+' 円':'未設定')+(t.memo?'<br>'+esc(t.memo):'')+'</div>'+(t.photos?.length?'<div class="thumbs">'+t.photos.map((p,i)=>'<img src="'+photoSrc(p)+'" alt="切符写真 '+(i+1)+'">').join('')+'</div>':'<div class="thumbs no-photo">画像未登録</div>')+'<div class="actions"><button class="btn" data-edit="'+t.id+'">編集</button><button class="btn danger" data-delete="'+t.id+'">削除</button></div></article>'}
-function render(){const q=$('search').value.trim().toLowerCase(),tf=$('typeFilter').value;let list=allTickets.filter(t=>(!tf||t.type===tf)&&(!q||[t.company,t.reservationService,t.place,t.country,t.route,t.machine,t.trainName,t.seatType,t.memo,t.type].join(' ').toLowerCase().includes(q)));if(activeTab==='overseas')list=list.filter(t=>t.region==='海外');if(activeTab==='company')list.sort((a,b)=>kanaSort(a.company,b.company));if(activeTab==='place')list.sort((a,b)=>kanaSort(a.place||'未設定',b.place||'未設定'));if($('sort').value==='date')list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));if($('sort').value==='price')list.sort((a,b)=>(b.price||0)-(a.price||0));if($('sort').value==='new')list.sort((a,b)=>b.created-a.created);
+function render(){const q=$('search').value.trim().toLowerCase(),tf=$('typeFilter').value;let list=allTickets.filter(t=>(!tf||t.type===tf)&&(!q||[t.company,t.reservationService,t.place,t.country,t.route,t.machine,t.trainName,t.seatType,t.memo,t.type].join(' ').toLowerCase().includes(q)));if($('sort').value==='date')list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));if($('sort').value==='price')list.sort((a,b)=>(b.price||0)-(a.price||0));if($('sort').value==='new')list.sort((a,b)=>b.created-a.created);
 $('totalCount').textContent=allTickets.length;$('companyCount').textContent=new Set(allTickets.map(t=>t.company).filter(Boolean)).size;$('countryCount').textContent=new Set(allTickets.filter(t=>t.region==='海外').map(t=>t.country).filter(Boolean)).size;
-$('listHeading').textContent=({all:'切符一覧',company:'鉄道会社別（50音順）',place:'発行場所別（50音順）',overseas:'海外切符（国・地域別）'})[activeTab];
+$('listHeading').textContent='切符一覧';
 const recent=[...allTickets].sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,3);$('recentTickets').innerHTML=recent.length?recent.map(ticketCard).join(''):'<div class="empty">まだ切符が登録されていません。</div>';
 $('ticketList').innerHTML=list.length?list.map(ticketCard).join(''):'<div class="empty">該当する切符はありません。</div>';
 }
@@ -110,7 +110,7 @@ $('addBtn').onclick=()=>openForm();$('closeModal').onclick=$('cancelBtn').onclic
 $('ticketForm').onsubmit=async e=>{e.preventDefault();const id=$('ticketId').value||crypto.randomUUID(),old=allTickets.find(t=>t.id===id);const photos=[...pendingPhotos];for(const f of $('photos').files){const data=await fileData(f);photos.push({name:f.name,data})}if(window.AndroidPhotoStore){for(const p of photos){if(p.data){const saved=AndroidPhotoStore.savePhoto(p.data,p.name||'ticket.jpg');if(saved){p.file=saved;delete p.data}}}}const item={id,created:old?.created||Date.now(),region:$('region').value,type:$('type').value,company:$('company').value.trim(),reservationService:$('reservationService').value,place:$('place').value.trim(),country:$('country').value.trim(),route:$('route').value.trim(),machine:$('machine').value.trim(),trainName:$('trainName').value.trim(),seatType:$('seatType').value.trim(),date:$('date').value,price:Number($('price').value)||0,memo:$('memo').value.trim(),photos};await dbPut(item);$('modal').classList.add('hidden');await refresh()};
 function fileData(f){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve({name:f.name,data:r.result});r.onerror=reject;r.readAsDataURL(f)})}
 $('recentTickets').onclick=$('ticketList').onclick=async e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');if(edit){const t=allTickets.find(x=>x.id===edit.dataset.edit);openForm(t)}if(del&&confirm('この切符を削除しますか？')){const target=allTickets.find(x=>x.id===del.dataset.delete);if(target&&window.AndroidPhotoStore)for(const p of (target.photos||[]))if(p.file)AndroidPhotoStore.deletePhoto(p.file);await dbDelete(del.dataset.delete);await refresh()}};
-$('tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;activeTab=b.dataset.tab;$$('.tab').forEach(x=>x.classList.toggle('active',x===b));render()};
+
 $('search').oninput=render;$('typeFilter').onchange=render;$('sort').onchange=render;
 $('backupBtn').onclick=()=>{const exportTickets=allTickets.map(t=>({...t,photos:(t.photos||[]).map(p=>({...p,data:p.data||(p.file&&window.AndroidPhotoStore?AndroidPhotoStore.getPhoto(p.file):undefined),file:undefined}))}));const blob=new Blob([JSON.stringify({app:'ticket-log',version:1,exportedAt:new Date().toISOString(),tickets:exportTickets})],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ticket-log-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
 $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.tickets))throw Error('形式が違います');if(!confirm(data.tickets.length+'件のデータを取り込みます。既存データと統合しますか？'))return;for(const t of data.tickets){if(t.id){if(window.AndroidPhotoStore){for(const p of (t.photos||[])){if(p.data){p.file=AndroidPhotoStore.savePhoto(p.data,p.name||'ticket.jpg');delete p.data}}}await dbPut(t)}}await refresh();alert('復元しました')}catch(err){alert('バックアップファイルを読み込めませんでした: '+err.message)}e.target.value=''};
