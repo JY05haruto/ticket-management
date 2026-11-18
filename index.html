@@ -129,7 +129,7 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
   box-shadow:0 8px 24px rgba(0,0,0,.22);
   backdrop-filter:blur(10px);
 }
-.app{padding-top:calc(54px + env(safe-area-inset-top))!important}
+.app{padding-top:calc(60px + env(safe-area-inset-top))!important}
 
 </style>
 </head>
@@ -161,8 +161,8 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 <div class="field overseas-field hidden"><label>国・地域</label><input id="country" placeholder="例：台湾"></div>
 
 <div class="field"><label>利用日</label><input id="date" type="date"></div>
-<div class="field"><label>金額</label><input id="price" type="number" min="0" step="1" placeholder="例：480"></div>
-<div class="field wide"><label>メモ</label><textarea id="memo" placeholder="購入場所、思い出、補足など"></textarea></div>
+<div class="field"><label>金額</label><input id="price" type="number" min="0" step="1" placeholder=""></div>
+<div class="field wide"><label>メモ</label><textarea id="memo" placeholder=""></textarea></div>
 <div class="field wide"><label>写真（表・裏・複数枚可）</label><div class="actions"><button class="btn" type="button" id="choosePhotosBtn">ファイルを選択</button><button class="btn" type="button" id="openCameraBtn">カメラを起動</button></div><input id="photos" class="hidden" type="file" accept="image/*" multiple><input id="cameraPhoto" class="hidden" type="file" accept="image/*" capture="environment"><small class="hint">端末内の写真を選ぶ場合は「ファイルを選択」、新しく撮影する場合は「カメラを起動」を押してください。</small><small id="photoSelectionInfo" class="hint">写真はまだ選択されていません。</small><div id="photoPreview" class="photo-preview" aria-live="polite"></div></div>
 
 </div><div class="actions"><button class="btn primary" type="submit">保存する</button><button class="btn" type="button" id="cancelBtn">キャンセル</button></div></form></div>
