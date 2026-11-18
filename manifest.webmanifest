@@ -1,1 +1,18 @@
-{"name":"切符コレクション","short_name":"切符管理","start_url":"./","display":"standalone","background_color":"#0b1423","theme_color":"#101d32","lang":"ja","description":"鉄道風デザインの切符コレクション管理アプリ","icons":[]}
+{
+  "name": "切符コレクション",
+  "short_name": "切符管理",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b1423",
+  "theme_color": "#101d32",
+  "lang": "ja",
+  "description": "鉄道風デザインの切符コレクション管理アプリ",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
