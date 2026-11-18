@@ -79,9 +79,9 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 
 .route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 .route-grid>.field{min-width:0}
-.dialog-wrap{position:relative;width:min(620px,calc(100vw - 32px));max-width:100%;padding-top:42px}.dialog-wrap .dialog{width:100%;max-width:100%}.dialog-close{position:absolute;top:0;right:18px;z-index:2;background:#263c57;border:1px solid var(--line)}@media(max-width:600px){.dialog-close{right:14px}}
-/* Match ticket form field outlines to the main menu border color. */
-#ticketForm input:not([type="hidden"]),#ticketForm select,#ticketForm textarea{border-color:var(--line)!important;outline-color:var(--line)}
+.dialog-wrap{position:relative;width:min(620px,calc(100vw - 32px));max-width:100%;padding-top:54px}.dialog-wrap .dialog{width:100%;max-width:100%}.dialog-close{position:absolute;top:12px;right:18px;z-index:2;background:#263c57;border:1px solid var(--line)}@media(max-width:600px){.dialog-close{right:14px}}
+/* Keep form field outlines identical to the main menu button border. */
+#ticketForm input:not([type="hidden"]),#ticketForm select,#ticketForm textarea{border:1px solid var(--line)!important;outline-color:var(--line)}
 </style>
 </head>
 <body>
@@ -154,5 +154,3 @@ async function refresh(){allTickets=await dbGet();if(window.AndroidPhotoStore){f
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
-/* All input outlines use the same border color as the main menu buttons. */
-input,select,textarea{border:1px solid var(--line)!important}
