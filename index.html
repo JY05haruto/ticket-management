@@ -75,7 +75,7 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 
 .price-wrap{position:relative}.price-wrap input{padding-right:38px}.price-wrap #priceUnit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
 
-.photo-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}.photo-preview-item{position:relative;min-width:0;background:#0c1929;border:1px solid var(--line);border-radius:7px;padding:5px}.photo-preview-item img{display:block;width:100%;height:100px;object-fit:contain;border-radius:4px}.photo-preview-item span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:10px;margin-top:4px}.photo-preview-empty{grid-column:1/-1;color:var(--muted);font-size:11px;padding:8px 0}
+.photo-preview{display:flex;flex-direction:column;gap:6px;margin-top:10px}.photo-preview-item{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;background:#0c1929;border:1px solid var(--line);border-radius:7px;padding:7px 9px}.photo-preview-item .photo-filename{display:block;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:12px;margin:0}.photo-preview-item .photo-remove{flex:none;white-space:nowrap}.photo-preview-empty{color:var(--muted);font-size:11px;padding:8px 0}
 
 .route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 .route-grid>.field{min-width:0}
@@ -205,19 +205,14 @@ function selectedPhotoFiles(){return [...[...$('photos').files].map((file,index)
 function updatePhotoSelection(){const files=selectedPhotoFiles(),count=pendingPhotos.length+files.length;$('photoSelectionInfo').textContent=count?count+'枚の写真を登録・選択中です。':'写真はまだ選択されていません。';renderPhotoPreview(files)}
 async function renderPhotoPreview(files=[]){
  const renderId=++previewRenderId,box=$('photoPreview');box.replaceChildren();
- const entries=pendingPhotos.map((p,i)=>({src:photoSrc(p),name:p.name||('登録済み写真 '+(i+1)),kind:'saved',index:i}));
- for(const selected of files){
-  try{const result=await fileData(selected.file);entries.push({src:result.data,name:selected.file.name||'選択した写真',kind:'file',inputId:selected.inputId,index:selected.index})}
-  catch(error){entries.push({src:'',name:selected.file.name||'選択した写真',error:String(error?.message||error),kind:'file',inputId:selected.inputId,index:selected.index})}
- }
+ const entries=pendingPhotos.map((p,i)=>({name:p.name||('登録済み写真 '+(i+1)),kind:'saved',index:i}));
+ for(const selected of files)entries.push({name:selected.file.name||'選択した写真',kind:'file',inputId:selected.inputId,index:selected.index});
  if(renderId!==previewRenderId)return;
- if(!entries.length){const empty=document.createElement('div');empty.className='photo-preview-empty';empty.textContent='選択した画像のプレビューがここに表示されます。';box.append(empty);return}
+ if(!entries.length){const empty=document.createElement('div');empty.className='photo-preview-empty';empty.textContent='写真はまだ選択されていません。';box.append(empty);return}
  for(const entry of entries){
-  const item=document.createElement('div');item.className='photo-preview-item';
-  if(entry.src){const img=document.createElement('img');img.src=entry.src;img.alt='切符画像のプレビュー';img.onerror=()=>{img.remove();const error=document.createElement('span');error.textContent='画像を表示できません（画像形式または読み込みエラー）';item.prepend(error)};item.append(img)}
-  else{const error=document.createElement('span');error.textContent=entry.error?'読み込み失敗：'+entry.error:'画像データを取得できません';item.append(error)}
-  const label=document.createElement('span');label.textContent=entry.name;item.append(label);
-  const remove=document.createElement('button');remove.type='button';remove.className='btn danger photo-remove';remove.textContent='写真を削除';remove.dataset.photoKind=entry.kind;remove.dataset.photoIndex=String(entry.index);if(entry.inputId)remove.dataset.photoInputId=entry.inputId;item.append(remove);box.append(item)
+  const item=document.createElement('div');item.className='photo-preview-item photo-filename-item';
+  const label=document.createElement('span');label.className='photo-filename';label.textContent=entry.name;item.append(label);
+  const remove=document.createElement('button');remove.type='button';remove.className='btn danger photo-remove';remove.textContent='写真を削除';remove.dataset.photoKind=entry.kind;remove.dataset.photoIndex=String(entry.index);if(entry.inputId)remove.dataset.photoInputId=entry.inputId;item.append(remove);box.append(item);
  }
 }
 function openPhotoLightbox(src){if(!src)return;$('photoLightboxImage').src=src;$('photoLightbox').classList.add('open')}
