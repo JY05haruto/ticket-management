@@ -63,6 +63,10 @@ class MainActivity : Activity() {
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         webView.settings.javaScriptEnabled = true
+        // Match the WebView viewport to the physical device width and keep text sizing consistent.
+        webView.settings.useWideViewPort = true
+        webView.settings.loadWithOverviewMode = false
+        webView.settings.textZoom = 100
         webView.settings.domStorageEnabled = true
         webView.settings.databaseEnabled = true
         // Always fetch the current GitHub Pages UI instead of a stale WebView cache.
