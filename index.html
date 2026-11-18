@@ -52,6 +52,15 @@ h1{font-size:18px}
 .dialog{max-height:88vh}
 }
 .filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.app{padding:12px 12px 35px}.stats{gap:7px}.stat{padding:10px}.stat b{font-size:21px}}
+/* Search controls stay on one row; safe-area padding keeps content clear of system bars. */
+.filters{display:grid;grid-template-columns:minmax(0,2fr) auto minmax(0,1fr) minmax(0,1fr);gap:7px;align-items:center}
+.filters input{grid-column:auto;min-width:0;padding:10px 8px}
+.filters select{min-width:0;padding:10px 6px;font-size:13px}
+.filters .btn{white-space:nowrap;padding:10px 11px}
+@media(max-width:600px){.filters{grid-template-columns:minmax(0,2fr) auto minmax(0,1fr) minmax(0,1fr);gap:5px}.filters input{grid-column:auto;font-size:12px;padding:9px 6px}.filters select{font-size:11px;padding:9px 3px}.filters .btn{font-size:12px;padding:9px 7px}}
+@media(max-width:360px){.filters{grid-template-columns:minmax(0,1.6fr) auto minmax(0,.9fr) minmax(0,.9fr)}.filters select{font-size:10px;padding-left:1px;padding-right:1px}.filters .btn{font-size:11px;padding-left:5px;padding-right:5px}}
+html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
+.app{padding-bottom:max(35px,env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
@@ -103,7 +112,7 @@ $('listHeading').textContent='切符一覧';
 const recent=[...allTickets].sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,3);$('recentTickets').innerHTML=recent.length?recent.map(ticketCard).join(''):'<div class="empty">まだ切符が登録されていません。</div>';
 $('ticketList').innerHTML=!listSearched?'<div class="empty">検索すると切符が表示されます。</div>':list.length?list.map(ticketCard).join(''):'<div class="empty">該当する切符はありません。</div>';
 }
-function openForm(t){$('ticketForm').reset();pendingPhotos=[];const history=[...new Set(allTickets.map(x=>(x.company||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));$('companyHistory').replaceChildren(...history.map(name=>{const option=document.createElement('option');option.value=name;return option}));$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','route','trainName','seatType','date','price','memo'])$(k).value=t[k]??'';pendingPhotos=t.photos||[]}toggleCountry();$('modal').classList.remove('hidden')}
+function updateCompanyHistory(){const history=[...new Set(allTickets.map(x=>(x.company||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));$('companyHistory').replaceChildren(...history.map(name=>{const option=document.createElement('option');option.value=name;return option}))}\nfunction openForm(t){$('ticketForm').reset();pendingPhotos=[];updateCompanyHistory();$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','route','trainName','seatType','date','price','memo'])$(k).value=t[k]??'';pendingPhotos=t.photos||[]}toggleCountry();$('modal').classList.remove('hidden')}
 function toggleCountry(){$$('.overseas-field').forEach(x=>x.classList.toggle('hidden',$('region').value!=='海外'))}function $$(s){return [...document.querySelectorAll(s)]}
 $('region').addEventListener('change',toggleCountry);
 $('addBtn').onclick=()=>openForm();$('closeModal').onclick=$('cancelBtn').onclick=()=>$('modal').classList.add('hidden');
@@ -111,7 +120,7 @@ $('ticketForm').onsubmit=async e=>{e.preventDefault();const id=$('ticketId').val
 function fileData(f){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve({name:f.name,data:r.result});r.onerror=reject;r.readAsDataURL(f)})}
 $('recentTickets').onclick=$('ticketList').onclick=async e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');if(edit){const t=allTickets.find(x=>x.id===edit.dataset.edit);openForm(t)}if(del&&confirm('この切符を削除しますか？')){const target=allTickets.find(x=>x.id===del.dataset.delete);if(target&&window.AndroidPhotoStore)for(const p of (target.photos||[]))if(p.file)AndroidPhotoStore.deletePhoto(p.file);await dbDelete(del.dataset.delete);await refresh()}};
 
-function runSearch(){const q=$('search').value.trim();if(!q){listSearched=false;$('typeFilter').value='';$('sort').value='new'}else{listSearched=true}render()}$('searchBtn').onclick=runSearch;$('search').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();runSearch()}};$('typeFilter').onchange=()=>{if(listSearched)render()};$('sort').onchange=()=>{if(listSearched)render()};
+function resetSearch(){listSearched=false;$('search').value='';$('typeFilter').value='';$('sort').value='new';render()}function runSearch(){if(listSearched){resetSearch();return}const q=$('search').value.trim();if(!q){resetSearch();return}listSearched=true;render()}$('searchBtn').onclick=runSearch;$('company').addEventListener('focus',updateCompanyHistory);$('search').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();runSearch()}};$('typeFilter').onchange=()=>{if(listSearched)render()};$('sort').onchange=()=>{if(listSearched)render()};
 async function refresh(){allTickets=await dbGet();if(window.AndroidPhotoStore){for(const t of allTickets){let changed=false;for(const p of (t.photos||[])){if(p.data){const saved=AndroidPhotoStore.savePhoto(p.data,p.name||'ticket.jpg');if(saved){p.file=saved;delete p.data;changed=true}}}if(changed)await dbPut(t)}}render()}
 (async()=>{try{db=await openDB();await refresh()}catch(e){alert('このブラウザでは端末内保存を利用できません。最新のChrome等で開いてください。')}})();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
