@@ -9,6 +9,8 @@ import android.webkit.ValueCallback
 import android.webkit.JavascriptInterface
 import android.net.Uri
 import android.content.Intent
+import android.provider.MediaStore
+import androidx.core.content.FileProvider
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.graphics.Color
@@ -22,6 +24,9 @@ class MainActivity : Activity() {
     private lateinit var webView: WebView
     private var fileCallback: ValueCallback<Array<Uri>>? = null
     private val fileRequestCode = 1001
+    private val cameraRequestCode = 1002
+    private var pendingCameraUri: Uri? = null
+    private var pendingCameraFile: File? = null
     private lateinit var photoDir: File
 
     inner class PhotoStore {
@@ -89,12 +94,33 @@ class MainActivity : Activity() {
             ): Boolean {
                 fileCallback?.onReceiveValue(null)
                 fileCallback = callback
-                val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "image/*"
-                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                if (params?.isCaptureEnabled == true) {
+                    try {
+                        val cameraDir = File(cacheDir, "camera").apply { mkdirs() }
+                        val photo = File.createTempFile("ticket_camera_", ".jpg", cameraDir)
+                        val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.fileprovider", photo)
+                        pendingCameraFile = photo
+                        pendingCameraUri = uri
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                            putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                        }
+                        startActivityForResult(intent, cameraRequestCode)
+                    } catch (_: Exception) {
+                        fileCallback?.onReceiveValue(null)
+                        fileCallback = null
+                        pendingCameraUri = null
+                        pendingCameraFile?.delete()
+                        pendingCameraFile = null
+                    }
+                } else {
+                    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "image/*"
+                        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                    }
+                    startActivityForResult(Intent.createChooser(intent, "端末内の写真を選択"), fileRequestCode)
                 }
-                startActivityForResult(Intent.createChooser(intent, "切符の写真を選択"), fileRequestCode)
                 return true
             }
         }
@@ -120,6 +146,12 @@ class MainActivity : Activity() {
             } else null
             fileCallback?.onReceiveValue(result)
             fileCallback = null
+        } else if (requestCode == cameraRequestCode) {
+            val uri = if (resultCode == RESULT_OK && pendingCameraUri != null) pendingCameraUri else null
+            fileCallback?.onReceiveValue(uri?.let { arrayOf(it) })
+            fileCallback = null
+            pendingCameraUri = null
+            pendingCameraFile = null
         }
     }
 
