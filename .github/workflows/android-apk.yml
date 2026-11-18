@@ -47,4 +47,4 @@ jobs:
           retention-days: 30
           compression-level: 0
 
-# Rebuild APK for the latest ticket-entry dialog layout.
+# Trigger APK build for the latest ticket dialog changes.
