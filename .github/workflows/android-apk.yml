@@ -50,3 +50,5 @@ jobs:
 # Trigger APK build for the latest ticket dialog changes.
 
 # Rebuild APK with the fixed bottom archive header.
+
+# Rebuild APK with the header fixed at the top.
