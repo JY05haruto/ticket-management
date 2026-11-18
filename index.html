@@ -79,51 +79,32 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 
 .route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 .route-grid>.field{min-width:0}
-.dialog-wrap{position:relative;width:min(620px,calc(100vw - 32px));max-width:100%;padding-top:54px}.dialog-wrap .dialog{width:100%;max-width:100%}.dialog-close{position:absolute;top:12px;right:18px;z-index:2;background:#263c57;border:1px solid var(--line)}@media(max-width:600px){.dialog-close{right:14px}}
-/* Force the same exact border color on every ticket form field and the close button. */
-#modal #ticketForm input:not([type="hidden"]),
-#modal #ticketForm select,
-#modal #ticketForm textarea,
-#modal .dialog-wrap > #closeModal{
-  border:1px solid #2a4260!important;
-  outline:1px solid #2a4260!important;
-  outline-offset:-1px;
+/* Modal close button and form alignment */
+.dialog-wrap{
+  position:relative;
+  width:min(620px,calc(100vw - 32px));
+  max-width:100%;
+  padding-top:92px;
 }
-
-/* Apply the exact main-menu border color to every input control and the modal close button. */
-input,select,textarea,#closeModal{border:1px solid #2a4260!important;outline:1px solid #2a4260!important;outline-offset:-1px}
-
-/* Final alignment: identical 1px borders, aligned right edges, and lower form fields. */
-#modal input:not([type="hidden"]),
-#modal select,
-#modal textarea,
-#modal #closeModal{
-  border:1px solid #2a4260!important;
-  outline:none!important;
-  box-shadow:none!important;
-}
-#modal .dialog-wrap #closeModal{right:19px!important}
-#modal #ticketForm{margin-top:14px!important}
-@media(max-width:600px){
-  #modal .dialog-wrap #closeModal{right:15px!important}
-}
-
-/* Match modal controls to the ticket-card frame and keep the close button clear of the form. */
-#modal .dialog-wrap{padding-top:68px!important}
-#modal .dialog-wrap #closeModal{right:19px!important;top:12px!important}
-#modal .dialog{border-radius:12px!important}
-#modal #ticketForm{margin-top:22px!important}
-#modal #ticketForm input:not([type="hidden"]),
-#modal #ticketForm select,
-#modal #ticketForm textarea,
-#modal .dialog-wrap #closeModal{
+.dialog-wrap .dialog{width:100%;max-width:100%}
+.dialog-close{
+  position:absolute;
+  top:12px;
+  right:19px;
+  z-index:2;
+  background:var(--panel2);
   border:1px solid var(--line)!important;
-  border-radius:12px!important;
-  outline:none!important;
+  border-radius:12px;
   box-shadow:none!important;
 }
-@media(max-width:600px){
-  #modal .dialog-wrap #closeModal{right:15px!important}
+#modal #ticketForm{margin-top:22px}
+#modal #ticketForm input:not([type="hidden"]),
+#modal #ticketForm select,
+#modal #ticketForm textarea{
+  border:1px solid var(--line)!important;
+  border-radius:12px;
+  outline:none!important;
+  box-shadow:none!important;
 }
 </style>
 </head>
