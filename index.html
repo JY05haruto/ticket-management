@@ -92,6 +92,21 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 
 /* Apply the exact main-menu border color to every input control and the modal close button. */
 input,select,textarea,#closeModal{border:1px solid #2a4260!important;outline:1px solid #2a4260!important;outline-offset:-1px}
+
+/* Final alignment: identical 1px borders, aligned right edges, and lower form fields. */
+#modal input:not([type="hidden"]),
+#modal select,
+#modal textarea,
+#modal #closeModal{
+  border:1px solid #2a4260!important;
+  outline:none!important;
+  box-shadow:none!important;
+}
+#modal .dialog-wrap #closeModal{right:19px!important}
+#modal #ticketForm{margin-top:14px!important}
+@media(max-width:600px){
+  #modal .dialog-wrap #closeModal{right:15px!important}
+}
 </style>
 </head>
 <body>
