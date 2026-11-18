@@ -10,12 +10,14 @@ import android.webkit.JavascriptInterface
 import android.net.Uri
 import android.content.Intent
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.graphics.Color
 import android.util.Base64
 import java.io.File
 
 // Ticket photos are stored in the app-private files directory, not shared media storage.
 // Build marker: include the latest ticket-management web app changes.
-// Build marker: latest web app UI (search-gated ticket list, reset on empty search).
+// Build marker: company history, safe system-bar layout, one-row filters and search reset.
 class MainActivity : Activity() {
     private lateinit var webView: WebView
     private var fileCallback: ValueCallback<Array<Uri>>? = null
@@ -56,6 +58,11 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Keep Android status/navigation bars visible; do not run the app in immersive fullscreen.
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.decorView.systemUiVisibility = 0
+        window.statusBarColor = Color.rgb(11, 20, 35)
+        window.navigationBarColor = Color.rgb(11, 20, 35)
         photoDir = File(filesDir, "ticket_photos").apply { mkdirs() }
         webView = WebView(this)
         webView.layoutParams = ViewGroup.LayoutParams(
@@ -93,7 +100,7 @@ class MainActivity : Activity() {
         }
         setContentView(webView)
         if (savedInstanceState == null) {
-            webView.loadUrl("https://jy05haruto.github.io/ticket-management/?v=20261118-5")
+            webView.loadUrl("https://jy05haruto.github.io/ticket-management/?v=20261118-6")
         } else {
             webView.restoreState(savedInstanceState)
         }
