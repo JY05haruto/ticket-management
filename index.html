@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#101d32">
 <meta name="description" content="鉄道風デザインの切符コレクション管理アプリ">
-<link rel="manifest" href="./manifest.webmanifest">\n<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
 <title>切符コレクション | Ticket Log</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1423;--panel:#14243a;--panel2:#1a2e49;--line:#2a4260;--gold:#e8bd68;--ink:#f4f0e7;--muted:#a9b8c9;--red:#d97868}
@@ -70,8 +71,16 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 @media(max-width:360px){.filters{grid-template-columns:repeat(3,minmax(0,1fr))}.filters .btn{font-size:11px;padding-left:3px;padding-right:3px}.filters select{font-size:10px;padding-left:2px;padding-right:2px}}
 
 
-.company-field{position:relative}.company-suggestions{position:absolute;z-index:8;top:calc(100% - 24px);left:0;right:0;max-height:190px;overflow-y:auto;background:#0c1929;border:1px solid var(--gold);border-radius:8px;box-shadow:0 8px 20px #0009}.company-suggestions button{display:block;width:100%;padding:10px 12px;text-align:left;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line)}.company-suggestions button:last-child{border-bottom:0}.company-suggestions button:active{background:var(--panel2)}\n
-.price-wrap{position:relative}.price-wrap input{padding-right:38px}.price-wrap #priceUnit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}\n\n.photo-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}.photo-preview-item{position:relative;min-width:0;background:#0c1929;border:1px solid var(--line);border-radius:7px;padding:5px}.photo-preview-item img{display:block;width:100%;height:100px;object-fit:contain;border-radius:4px}.photo-preview-item span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:10px;margin-top:4px}.photo-preview-empty{grid-column:1/-1;color:var(--muted);font-size:11px;padding:8px 0}\n\n.route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}\n.route-grid>.field{min-width:0}\n.dialog-wrap{position:relative;width:min(620px,calc(100vw - 32px));max-width:100%;padding-top:42px}.dialog-wrap .dialog{width:100%;max-width:100%}.dialog-close{position:absolute;top:0;right:18px;z-index:2;background:#263c57;border:1px solid var(--line)}@media(max-width:600px){.dialog-close{right:14px}}\n/* Match ticket form field outlines to the main menu border color. */
+.company-field{position:relative}.company-suggestions{position:absolute;z-index:8;top:calc(100% - 24px);left:0;right:0;max-height:190px;overflow-y:auto;background:#0c1929;border:1px solid var(--gold);border-radius:8px;box-shadow:0 8px 20px #0009}.company-suggestions button{display:block;width:100%;padding:10px 12px;text-align:left;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line)}.company-suggestions button:last-child{border-bottom:0}.company-suggestions button:active{background:var(--panel2)}
+
+.price-wrap{position:relative}.price-wrap input{padding-right:38px}.price-wrap #priceUnit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
+
+.photo-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}.photo-preview-item{position:relative;min-width:0;background:#0c1929;border:1px solid var(--line);border-radius:7px;padding:5px}.photo-preview-item img{display:block;width:100%;height:100px;object-fit:contain;border-radius:4px}.photo-preview-item span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:10px;margin-top:4px}.photo-preview-empty{grid-column:1/-1;color:var(--muted);font-size:11px;padding:8px 0}
+
+.route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.route-grid>.field{min-width:0}
+.dialog-wrap{position:relative;width:min(620px,calc(100vw - 32px));max-width:100%;padding-top:42px}.dialog-wrap .dialog{width:100%;max-width:100%}.dialog-close{position:absolute;top:0;right:18px;z-index:2;background:#263c57;border:1px solid var(--line)}@media(max-width:600px){.dialog-close{right:14px}}
+/* Match ticket form field outlines to the main menu border color. */
 #ticketForm input:not([type="hidden"]),#ticketForm select,#ticketForm textarea{border-color:var(--line)!important;outline-color:var(--line)}
 </style>
 </head>
@@ -145,3 +154,5 @@ async function refresh(){allTickets=await dbGet();if(window.AndroidPhotoStore){f
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
+/* All input outlines use the same border color as the main menu buttons. */
+input,select,textarea{border:1px solid var(--line)!important}
