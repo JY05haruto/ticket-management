@@ -71,12 +71,12 @@ h1{font-size:18px}
 <div id="modal" class="modal hidden"><div class="dialog"><div class="dialog-head"><h3 id="formTitle">切符を追加</h3><button class="btn" id="closeModal">閉じる</button></div><form id="ticketForm"><input type="hidden" id="ticketId"><div class="formgrid">
 <div class="field"><label>国内・海外</label><select id="region"><option value="国内">国内</option><option value="海外">海外</option></select></div>
 <div class="field"><label>切符の種類</label><select id="type" required><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select></div>
-<div class="field"><label>鉄道会社</label><input id="company" required placeholder="例：相模鉄道"><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
+<div class="field"><label>鉄道会社</label><input id="company" required list="companyHistory" placeholder="入力または履歴から選択"><datalist id="companyHistory"></datalist><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
 <div class="field"><label>区間</label><input id="route" placeholder="例：横浜 → 海老名"></div>
 <div class="field"><label>列車名</label><input id="trainName" placeholder="例：特急○○号"></div>
 <div class="field"><label>席種</label><input id="seatType" placeholder="例：指定席・自由席・グリーン車"></div>
-<div class="field"><label>ネット予約</label><select id="reservationService"><option value="">該当なし</option><option>えきねっと</option><option>e5489</option><option>EX予約</option></select></div>
-<div class="field"><label>発行駅・発行場所</label><input id="place" placeholder="実際に発券・受取した駅"></div>
+<div class="field"><label>ネット予約</label><select id="reservationService"><option value="">該当なし</option><option>えきねっと</option><option>e5489</option><option>EX予約</option><option>JR九州ネット予約</option></select></div>
+<div class="field"><label>発行箇所</label><input id="place" placeholder="実際に発券・受取した駅"></div>
 <div class="field overseas-field hidden"><label>国・地域</label><input id="country" placeholder="例：台湾"></div>
 <div class="field"><label>券売機</label><input id="machine" placeholder="例：駅名・券売機番号"></div>
 <div class="field"><label>利用日</label><input id="date" type="date"></div>
@@ -103,7 +103,7 @@ $('listHeading').textContent='切符一覧';
 const recent=[...allTickets].sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,3);$('recentTickets').innerHTML=recent.length?recent.map(ticketCard).join(''):'<div class="empty">まだ切符が登録されていません。</div>';
 $('ticketList').innerHTML=list.length?list.map(ticketCard).join(''):'<div class="empty">該当する切符はありません。</div>';
 }
-function openForm(t){$('ticketForm').reset();pendingPhotos=[];$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','route','machine','trainName','seatType','date','price','memo'])$(k).value=t[k]??'';pendingPhotos=t.photos||[]}toggleCountry();$('modal').classList.remove('hidden')}
+function openForm(t){$('ticketForm').reset();pendingPhotos=[];const history=[...new Set(allTickets.map(x=>(x.company||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));$('companyHistory').replaceChildren(...history.map(name=>{const option=document.createElement('option');option.value=name;return option}));$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','route','machine','trainName','seatType','date','price','memo'])$(k).value=t[k]??'';pendingPhotos=t.photos||[]}toggleCountry();$('modal').classList.remove('hidden')}
 function toggleCountry(){$$('.overseas-field').forEach(x=>x.classList.toggle('hidden',$('region').value!=='海外'))}function $$(s){return [...document.querySelectorAll(s)]}
 $('region').addEventListener('change',toggleCountry);
 $('addBtn').onclick=()=>openForm();$('closeModal').onclick=$('cancelBtn').onclick=()=>$('modal').classList.add('hidden');
