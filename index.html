@@ -192,12 +192,12 @@ function showCompanySuggestions(){const box=$('companySuggestions'),q=$('company
 function openForm(t){$('ticketForm').reset();pendingPhotos=[];updateCompanyHistory();$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','trainName','seatType','trainName2','seatType2','date','price','memo'])$(k).value=t[k]??'';const r=getRouteParts(t);$('route1From').value=r.a;$('route1To').value=r.b;$('route2From').value=r.c||r.b;$('route2To').value=r.d;pendingPhotos=t.photos||[]}toggleCountry();updatePhotoSelection();$('modal').classList.remove('hidden');requestAnimationFrame(()=>updatePhotoSelection());$('modal').scrollTop=0;document.querySelector('.dialog').scrollTop=0;window.scrollTo(0,0)}
 function syncSegment2From(){ $('route2From').value=$('route1To').value; }$('route1To').addEventListener('input',()=>{syncSegment2From();toggleSegment2Fields()});function toggleSegment2Fields(){const active=!!$('route2To').value.trim();$('segment2TrainFields').classList.toggle('hidden',!active)}$('route2From').addEventListener('input',toggleSegment2Fields);$('route2To').addEventListener('input',toggleSegment2Fields);function toggleCountry(){document.querySelectorAll('.overseas-field').forEach(x=>x.classList.toggle('hidden',$('region').value!=='海外'))}function $$(s){return [...document.querySelectorAll(s)]}
 let previewRenderId=0;
-function selectedPhotoFiles(){return [...$('photos').files,...$('cameraPhoto').files]}
+function selectedPhotoFiles(){return [...[...$('photos').files].map((file,index)=>({file,inputId:'photos',index})),...[...$('cameraPhoto').files].map((file,index)=>({file,inputId:'cameraPhoto',index}))]}
 function updatePhotoSelection(){const files=selectedPhotoFiles(),count=pendingPhotos.length+files.length;$('photoSelectionInfo').textContent=count?count+'枚の写真を登録・選択中です。':'写真はまだ選択されていません。';renderPhotoPreview(files)}
 async function renderPhotoPreview(files=[]){
  const renderId=++previewRenderId,box=$('photoPreview');box.replaceChildren();
  const entries=pendingPhotos.map((p,i)=>({src:photoSrc(p),name:p.name||('登録済み写真 '+(i+1)),kind:'saved',index:i}));
- for(let i=0;i<files.length;i++){const file=files[i];try{const data=await fileData(file);entries.push({src:data.data,name:file.name||'選択した写真',kind:'file',index:i})}catch(_){entries.push({src:'',name:file.name||'写真を読み込めませんでした',kind:'file',index:i})}}
+ for(const selected of files){const file=selected.file;try{const data=await fileData(file);entries.push({src:data.data,name:file.name||'選択した写真',kind:'file',inputId:selected.inputId,index:selected.index})}catch(_){entries.push({src:'',name:file.name||'写真を読み込めませんでした',kind:'file',inputId:selected.inputId,index:selected.index})}}
  if(renderId!==previewRenderId)return;
  if(!entries.length){const empty=document.createElement('div');empty.className='photo-preview-empty';empty.textContent='選択した画像のプレビューがここに表示されます。';box.append(empty);return}
  for(const entry of entries){
@@ -205,7 +205,7 @@ async function renderPhotoPreview(files=[]){
   if(entry.src){const img=document.createElement('img');img.src=entry.src;img.alt='切符画像のプレビュー';img.onerror=()=>{img.remove();const error=document.createElement('span');error.textContent='画像を表示できません';item.prepend(error)};item.append(img)}
   else{const error=document.createElement('span');error.textContent='画像データを取得できません';item.append(error)}
   const label=document.createElement('span');label.textContent=entry.name;item.append(label);
-  const remove=document.createElement('button');remove.type='button';remove.className='btn danger photo-remove';remove.textContent='写真を削除';remove.dataset.photoKind=entry.kind;remove.dataset.photoIndex=String(entry.index);item.append(remove);box.append(item)
+  const remove=document.createElement('button');remove.type='button';remove.className='btn danger photo-remove';remove.textContent='写真を削除';remove.dataset.photoKind=entry.kind;remove.dataset.photoIndex=String(entry.index);if(entry.inputId)remove.dataset.photoInputId=entry.inputId;item.append(remove);box.append(item)
  }
 }
 $('photoPreview').addEventListener('click',e=>{
@@ -213,14 +213,8 @@ $('photoPreview').addEventListener('click',e=>{
  const index=Number(button.dataset.photoIndex);
  if(button.dataset.photoKind==='saved'){pendingPhotos.splice(index,1)}
  else{
-  const input=button.dataset.photoIndex!==undefined?$('photos'):$('photos');
-  const camera=$('cameraPhoto');
-  const files=selectedPhotoFiles();
-  const globalIndex=index;
-  const fromPhotos=$('photos').files.length;
-  const targetInput=globalIndex<fromPhotos?$('photos'):camera;
-  const localIndex=globalIndex<fromPhotos?globalIndex:globalIndex-fromPhotos;
-  const dt=new DataTransfer();[...targetInput.files].forEach((file,i)=>{if(i!==localIndex)dt.items.add(file)});targetInput.files=dt.files;
+  const targetInput=$(button.dataset.photoInputId);
+  const dt=new DataTransfer();[...targetInput.files].forEach((file,i)=>{if(i!==index)dt.items.add(file)});targetInput.files=dt.files;
  }
  updatePhotoSelection();
 });
