@@ -80,8 +80,15 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 .route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 .route-grid>.field{min-width:0}
 .dialog-wrap{position:relative;width:min(620px,calc(100vw - 32px));max-width:100%;padding-top:54px}.dialog-wrap .dialog{width:100%;max-width:100%}.dialog-close{position:absolute;top:12px;right:18px;z-index:2;background:#263c57;border:1px solid var(--line)}@media(max-width:600px){.dialog-close{right:14px}}
-/* Keep form field outlines identical to the main menu button border. */
-#ticketForm input:not([type="hidden"]),#ticketForm select,#ticketForm textarea{border:1px solid var(--line)!important;outline-color:var(--line)}
+/* Force the same exact border color on every ticket form field and the close button. */
+#modal #ticketForm input:not([type="hidden"]),
+#modal #ticketForm select,
+#modal #ticketForm textarea,
+#modal .dialog-wrap > #closeModal{
+  border:1px solid #2a4260!important;
+  outline:1px solid #2a4260!important;
+  outline-offset:-1px;
+}
 </style>
 </head>
 <body>
