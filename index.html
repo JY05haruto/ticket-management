@@ -203,7 +203,7 @@ function syncSegment2From(){ $('route2From').value=$('route1To').value; }$('rout
 let previewRenderId=0;
 function selectedPhotoFiles(){return [...[...$('photos').files].map((file,index)=>({file,inputId:'photos',index})),...[...$('cameraPhoto').files].map((file,index)=>({file,inputId:'cameraPhoto',index}))]}
 function updatePhotoSelection(){const files=selectedPhotoFiles(),count=pendingPhotos.length+files.length;$('photoSelectionInfo').textContent=count?count+'枚の写真を登録・選択中です。':'写真はまだ選択されていません。';renderPhotoPreview(files)}
-async function renderPhotoPreview(files=[]){
+async async function renderPhotoPreview(files=[]){
  const renderId=++previewRenderId,box=$('photoPreview');box.replaceChildren();
  const entries=pendingPhotos.map((p,i)=>({src:photoSrc(p),name:p.name||('登録済み写真 '+(i+1)),kind:'saved',index:i}));
  for(const selected of files){
@@ -235,7 +235,7 @@ $('photoPreview').addEventListener('click',async e=>{
   const editId=$('ticketId').value;
   const ticket=allTickets.find(t=>t.id===editId);
   pendingPhotos.splice(index,1);
-  if(ticket){ticket.photos=pendingPhotos;await dbPut(ticket);render()}
+  if(ticket){ticket.photos=[...pendingPhotos];await dbPut(ticket);await refresh()}
  }else{
   const targetInput=$(button.dataset.photoInputId);
   const dt=new DataTransfer();[...targetInput.files].forEach((file,i)=>{if(i!==index)dt.items.add(file)});targetInput.files=dt.files;
