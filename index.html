@@ -80,25 +80,35 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 .route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 .route-grid>.field{min-width:0}
 /* Modal close button and form alignment */
+/* Keep the dialog title and close control visible while the form scrolls. */
 .dialog-wrap{
   position:relative;
   width:min(620px,calc(100vw - 32px));
   max-width:100%;
-  padding-top:80px;
+  padding-top:0;
 }
-.dialog-wrap .dialog{width:100%;max-width:100%}
+.dialog-wrap .dialog{width:100%;max-width:100%;position:relative}
+.dialog-head{
+  position:sticky;
+  top:-18px;
+  z-index:5;
+  background:#122139;
+  padding:8px 112px 12px 0;
+  margin:-8px 0 12px;
+}
 .dialog-close{
   position:absolute;
-  top:12px;
-  right:0;
-  z-index:2;
-  background:#0d1a2b!important;
+  top:14px;
+  right:14px;
+  z-index:8;
+  background:transparent!important;
   color:var(--ink);
-  border:1px solid var(--line)!important;
-  border-radius:12px;
+  border:0!important;
+  outline:0!important;
   box-shadow:none!important;
+  border-radius:0;
 }
-#modal #ticketForm{margin-top:22px}
+#modal #ticketForm{margin-top:0}
 #modal #ticketForm input:not([type="hidden"]),
 #modal #ticketForm select,
 #modal #ticketForm textarea{
