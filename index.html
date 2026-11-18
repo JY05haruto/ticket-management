@@ -62,14 +62,15 @@ h1{font-size:18px}
 html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 .app{padding-bottom:max(35px,env(safe-area-inset-bottom))}
 
-/* Put search input on its own row, with search/type/sort controls below it. */
+/* Search input above three equally sized controls. */
 .filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-items:center}
 .filters input{grid-column:1/-1;min-width:0}
-.filters .btn,.filters select{min-width:0;width:100%}
-@media(max-width:600px){.filters{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.filters input{grid-column:1/-1}.filters .btn{padding:9px 6px;font-size:12px}.filters select{padding:9px 4px;font-size:11px}}
+.filters .btn,.filters select{min-width:0;width:100%;height:42px;min-height:42px;padding:9px 6px;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+@media(max-width:600px){.filters{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.filters input{grid-column:1/-1}.filters .btn,.filters select{height:42px;min-height:42px;padding:8px 4px;font-size:11px}}
 @media(max-width:360px){.filters{grid-template-columns:repeat(3,minmax(0,1fr))}.filters .btn{font-size:11px;padding-left:3px;padding-right:3px}.filters select{font-size:10px;padding-left:2px;padding-right:2px}}
 
-\n.company-field{position:relative}.company-suggestions{position:absolute;z-index:8;top:calc(100% - 24px);left:0;right:0;max-height:190px;overflow-y:auto;background:#0c1929;border:1px solid var(--gold);border-radius:8px;box-shadow:0 8px 20px #0009}.company-suggestions button{display:block;width:100%;padding:10px 12px;text-align:left;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line)}.company-suggestions button:last-child{border-bottom:0}.company-suggestions button:active{background:var(--panel2)}\n</style>
+
+.company-field{position:relative}.company-suggestions{position:absolute;z-index:8;top:calc(100% - 24px);left:0;right:0;max-height:190px;overflow-y:auto;background:#0c1929;border:1px solid var(--gold);border-radius:8px;box-shadow:0 8px 20px #0009}.company-suggestions button{display:block;width:100%;padding:10px 12px;text-align:left;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line)}.company-suggestions button:last-child{border-bottom:0}.company-suggestions button:active{background:var(--panel2)}\n</style>
 </head>
 <body>
 <div class="app">
@@ -120,7 +121,8 @@ $('listHeading').textContent='切符一覧';
 const recent=[...allTickets].sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,3);$('recentTickets').innerHTML=recent.length?recent.map(ticketCard).join(''):'<div class="empty">まだ切符が登録されていません。</div>';
 $('ticketList').innerHTML=!listSearched?'<div class="empty">検索すると切符が表示されます。</div>':list.length?list.map(ticketCard).join(''):'<div class="empty">該当する切符はありません。</div>';
 }
-function updateCompanyHistory(){const history=[...new Set(allTickets.map(x=>(x.company||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));$('companyHistory').replaceChildren(...history.map(name=>{const option=document.createElement('option');option.value=name;return option}));return history}\nfunction showCompanySuggestions(){const box=$('companySuggestions'),q=$('company').value.trim().toLowerCase(),history=updateCompanyHistory().filter(name=>name.toLowerCase().includes(q));box.replaceChildren();if(!history.length){box.classList.add('hidden');return}for(const name of history){const button=document.createElement('button');button.type='button';button.textContent=name;button.addEventListener('mousedown',e=>e.preventDefault());button.addEventListener('click',()=>{$('company').value=name;box.classList.add('hidden')});box.append(button)}box.classList.remove('hidden')}
+function updateCompanyHistory(){const history=[...new Set(allTickets.map(x=>(x.company||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));$('companyHistory').replaceChildren(...history.map(name=>{const option=document.createElement('option');option.value=name;return option}));return history}
+function showCompanySuggestions(){const box=$('companySuggestions'),q=$('company').value.trim().toLowerCase(),history=updateCompanyHistory().filter(name=>name.toLowerCase().includes(q));box.replaceChildren();if(!history.length){box.classList.add('hidden');return}for(const name of history){const button=document.createElement('button');button.type='button';button.textContent=name;button.addEventListener('mousedown',e=>e.preventDefault());button.addEventListener('click',()=>{$('company').value=name;box.classList.add('hidden')});box.append(button)}box.classList.remove('hidden')}
 function openForm(t){$('ticketForm').reset();pendingPhotos=[];updateCompanyHistory();$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','route','trainName','seatType','date','price','memo'])$(k).value=t[k]??'';pendingPhotos=t.photos||[]}toggleCountry();$('modal').classList.remove('hidden')}
 function toggleCountry(){$$('.overseas-field').forEach(x=>x.classList.toggle('hidden',$('region').value!=='海外'))}function $$(s){return [...document.querySelectorAll(s)]}
 $('region').addEventListener('change',toggleCountry);$('company').addEventListener('focus',showCompanySuggestions);$('company').addEventListener('input',showCompanySuggestions);$('companySuggestions').addEventListener('mouseleave',()=>{});document.addEventListener('click',e=>{if(!e.target.closest('.company-field'))$('companySuggestions').classList.add('hidden')});
