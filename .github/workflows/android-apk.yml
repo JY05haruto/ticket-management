@@ -54,3 +54,4 @@ jobs:
 # Rebuild APK with the header fixed at the top.
 
 # Build trigger note: include latest UI revision
+# Build trigger note: latest delete confirmation
