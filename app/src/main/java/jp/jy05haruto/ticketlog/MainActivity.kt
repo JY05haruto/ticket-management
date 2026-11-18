@@ -47,11 +47,17 @@ class MainActivity : Activity() {
                 if (!name.matches(Regex("ticket_[a-f0-9-]+\\.img"))) return ""
                 val file = File(photoDir, name)
                 if (!file.isFile) return ""
+                val bytes = file.readBytes()
                 val mime = when {
-                    file.readBytes().take(3).map { it.toInt() and 0xff } == listOf(0xff,0xd8,0xff) -> "image/jpeg"
-                    else -> "image/png"
+                    bytes.size >= 3 && bytes[0] == 0xff.toByte() && bytes[1] == 0xd8.toByte() && bytes[2] == 0xff.toByte() -> "image/jpeg"
+                    bytes.size >= 8 && bytes.sliceArray(0..7).contentEquals(byteArrayOf(0x89.toByte(), 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) -> "image/png"
+                    bytes.size >= 12 && String(bytes, 0, 4, Charsets.US_ASCII) == "RIFF" && String(bytes, 8, 4, Charsets.US_ASCII) == "WEBP" -> "image/webp"
+                    bytes.size >= 6 && (String(bytes, 0, 6, Charsets.US_ASCII) == "GIF87a" || String(bytes, 0, 6, Charsets.US_ASCII) == "GIF89a") -> "image/gif"
+                    bytes.size >= 12 && String(bytes, 4, 4, Charsets.US_ASCII) == "ftyp" -> "image/heic"
+                    else -> "application/octet-stream"
                 }
-                "data:$mime;base64," + Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
+                if (!mime.startsWith("image/")) return ""
+                "data:$mime;base64," + Base64.encodeToString(bytes, Base64.NO_WRAP)
             } catch (_: Exception) { "" }
         }
 
