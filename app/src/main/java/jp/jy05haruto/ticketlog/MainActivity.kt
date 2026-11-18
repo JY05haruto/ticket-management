@@ -6,19 +6,54 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.ValueCallback
+import android.webkit.JavascriptInterface
 import android.net.Uri
 import android.content.Intent
-import android.provider.MediaStore
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.util.Base64
+import java.io.File
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
     private var fileCallback: ValueCallback<Array<Uri>>? = null
     private val fileRequestCode = 1001
+    private lateinit var photoDir: File
+
+    inner class PhotoStore {
+        @JavascriptInterface
+        fun savePhoto(dataUrl: String, originalName: String): String {
+            return try {
+                val encoded = dataUrl.substringAfter(",", "")
+                val bytes = Base64.decode(encoded, Base64.DEFAULT)
+                val name = "ticket_" + java.util.UUID.randomUUID().toString() + ".img"
+                File(photoDir, name).writeBytes(bytes)
+                name
+            } catch (_: Exception) { "" }
+        }
+
+        @JavascriptInterface
+        fun getPhoto(name: String): String {
+            return try {
+                if (!name.matches(Regex("ticket_[a-f0-9-]+\\.img"))) return ""
+                val file = File(photoDir, name)
+                if (!file.isFile) return ""
+                val mime = when {
+                    file.readBytes().take(3).map { it.toInt() and 0xff } == listOf(0xff,0xd8,0xff) -> "image/jpeg"
+                    else -> "image/png"
+                }
+                "data:$mime;base64," + Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
+            } catch (_: Exception) { "" }
+        }
+
+        @JavascriptInterface
+        fun deletePhoto(name: String) {
+            if (name.matches(Regex("ticket_[a-f0-9-]+\\.img"))) File(photoDir, name).delete()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        photoDir = File(filesDir, "ticket_photos").apply { mkdirs() }
         webView = WebView(this)
         webView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -28,6 +63,7 @@ class MainActivity : Activity() {
         webView.settings.domStorageEnabled = true
         webView.settings.databaseEnabled = true
         webView.settings.allowFileAccess = false
+        webView.addJavascriptInterface(PhotoStore(), "AndroidPhotoStore")
         webView.webViewClient = WebViewClient()
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
@@ -42,10 +78,7 @@ class MainActivity : Activity() {
                     type = "image/*"
                     putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                 }
-                startActivityForResult(
-                    Intent.createChooser(intent, "切符の写真を選択"),
-                    fileRequestCode
-                )
+                startActivityForResult(Intent.createChooser(intent, "切符の写真を選択"), fileRequestCode)
                 return true
             }
         }
