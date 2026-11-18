@@ -34,7 +34,7 @@ img{max-width:100%;height:auto}
 .stat b{font-size:clamp(17px,5vw,21px)}
 .stat span{font-size:clamp(10px,2.8vw,12px)}
 .btn{padding:9px 11px}
-.dialog{padding:14px}
+.dialog{padding:14px}.dialog-head{margin:-14px -14px 12px;padding:6px 14px 10px}
 }
 @media(max-width:360px){
 .filters{grid-template-columns:minmax(0,1fr)}
@@ -97,8 +97,9 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
   gap:12px;
   min-height:54px;
   background:#122139;
-  padding:6px 0 10px;
-  margin:0 0 12px;
+  padding:6px 18px 10px;
+  margin:-18px -18px 12px;
+  border-radius:13px 13px 0 0;
 }
 .dialog-head h3{
   margin:0;
