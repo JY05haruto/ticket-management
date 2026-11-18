@@ -100,7 +100,7 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 <div class="field"><label>利用日</label><input id="date" type="date"></div>
 <div class="field"><label>金額（円換算可）</label><input id="price" type="number" min="0" step="1" placeholder="例：480"></div>
 <div class="field wide"><label>メモ</label><textarea id="memo" placeholder="購入場所、思い出、補足など"></textarea></div>
-<div class="field wide"><label>切符の写真（表・裏・複数枚可）</label><input id="photos" type="file" accept="image/*" multiple></div>
+<div class="field wide"><label>切符の写真（表・裏・複数枚可）</label><input id="photos" type="file" accept="image/*" capture="environment" multiple><small class="hint">ファイルを選択するか、カメラを起動して撮影できます。</small></div>
 
 </div><div class="actions"><button class="btn primary" type="submit">保存する</button><button class="btn" type="button" id="cancelBtn">キャンセル</button></div></form></div>
 </div>
