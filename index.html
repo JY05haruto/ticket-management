@@ -41,7 +41,7 @@
 <div class="field wide"><label>メモ</label><textarea id="memo" placeholder="購入場所、思い出、補足など"></textarea></div>
 <div class="field wide"><label>切符の写真（表・裏・複数枚可）</label><input id="photos" type="file" accept="image/*" capture="environment" multiple><div class="notice">写真はアプリ内に保存されます。画像は端末容量を使用します。</div></div>
 
-</div><div class="actions"><button class="btn primary" type="submit">保存する</button><button class="btn" type="button" id="cancelBtn">キャンセル</button></div></form></div><footer class="footer">TICKET LOG ・ データはこの端末のブラウザ内に保存されます<br>ブラウザのデータ削除前にバックアップを作成してください。</footer>
+</div><div class="actions"><button class="btn primary" type="submit">保存する</button><button class="btn" type="button" id="cancelBtn">キャンセル</button></div></form></div>
 </div>
 <script>
 const DB_NAME='ticket-log-db',STORE='tickets';let db,allTickets=[],activeTab='all',pendingPhotos=[];
