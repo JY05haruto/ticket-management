@@ -107,6 +107,24 @@ input,select,textarea,#closeModal{border:1px solid #2a4260!important;outline:1px
 @media(max-width:600px){
   #modal .dialog-wrap #closeModal{right:15px!important}
 }
+
+/* Match modal controls to the ticket-card frame and keep the close button clear of the form. */
+#modal .dialog-wrap{padding-top:68px!important}
+#modal .dialog-wrap #closeModal{right:19px!important;top:12px!important}
+#modal .dialog{border-radius:12px!important}
+#modal #ticketForm{margin-top:22px!important}
+#modal #ticketForm input:not([type="hidden"]),
+#modal #ticketForm select,
+#modal #ticketForm textarea,
+#modal .dialog-wrap #closeModal{
+  border:1px solid var(--line)!important;
+  border-radius:12px!important;
+  outline:none!important;
+  box-shadow:none!important;
+}
+@media(max-width:600px){
+  #modal .dialog-wrap #closeModal{right:15px!important}
+}
 </style>
 </head>
 <body>
