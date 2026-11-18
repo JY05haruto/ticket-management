@@ -16,9 +16,10 @@
 <div class="app">
 <header class="top"><div class="brand"><div class="logo">🎫</div><div><h1>切符コレクション</h1><small>MY TICKET ARCHIVE</small></div></div></header>
 <div class="stats"><div class="stat"><b id="totalCount">0</b><span>登録した切符</span></div><div class="stat"><b id="companyCount">0</b><span>鉄道会社</span></div><div class="stat"><b id="countryCount">0</b><span>国・地域</span></div></div>
-<section class="home-recent"><h2>最近追加した切符 <span>最新5件</span></h2><div id="recentTickets" class="grid"><div class="empty">まだ切符が登録されていません。</div></div></section>
+
 
 <div class="actions"><button class="btn primary" id="addBtn">＋ 切符を追加</button><div class="filelinks"><button class="btn" id="backupBtn">↓ バックアップ</button><button class="btn" id="restoreBtn">↑ 復元</button></div><input id="restoreFile" type="file" accept="application/json" class="hidden"></div>
+<section class="home-recent"><h2>最近追加した切符 <span>最新3件</span></h2><div id="recentTickets" class="grid"><div class="empty">まだ切符が登録されていません。</div></div></section>
 <nav class="tabs" id="tabs"><button class="tab active" data-tab="all">すべて</button><button class="tab" data-tab="company">会社別</button><button class="tab" data-tab="place">発行場所別</button><button class="tab" data-tab="overseas">海外切符</button></nav>
 <section class="panel"><h3 id="listHeading">切符一覧</h3><div class="filters"><input id="search" placeholder="会社・駅・国・メモなどで検索"><select id="typeFilter"><option value="">すべての種類</option><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select><select id="sort"><option value="new">登録順</option><option value="date">利用日順</option><option value="price">金額順</option></select></div></section>
 <div id="ticketList" class="grid"><div class="empty">まだ切符が登録されていません。<br>「切符を追加」からコレクションを作りましょう。</div></div>
@@ -57,7 +58,7 @@ function ticketCard(t){return '<article class="ticket"><span class="pill">'+esc(
 function render(){const q=$('search').value.trim().toLowerCase(),tf=$('typeFilter').value;let list=allTickets.filter(t=>(!tf||t.type===tf)&&(!q||[t.company,t.reservationService,t.place,t.country,t.route,t.machine,t.trainName,t.seatType,t.memo,t.type].join(' ').toLowerCase().includes(q)));if(activeTab==='overseas')list=list.filter(t=>t.region==='海外');if(activeTab==='company')list.sort((a,b)=>kanaSort(a.company,b.company));if(activeTab==='place')list.sort((a,b)=>kanaSort(a.place||'未設定',b.place||'未設定'));if($('sort').value==='date')list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));if($('sort').value==='price')list.sort((a,b)=>(b.price||0)-(a.price||0));if($('sort').value==='new')list.sort((a,b)=>b.created-a.created);
 $('totalCount').textContent=allTickets.length;$('companyCount').textContent=new Set(allTickets.map(t=>t.company).filter(Boolean)).size;$('countryCount').textContent=new Set(allTickets.filter(t=>t.region==='海外').map(t=>t.country).filter(Boolean)).size;
 $('listHeading').textContent=({all:'切符一覧',company:'鉄道会社別（50音順）',place:'発行場所別（50音順）',overseas:'海外切符（国・地域別）'})[activeTab];
-const recent=[...allTickets].sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,5);$('recentTickets').innerHTML=recent.length?recent.map(ticketCard).join(''):'<div class="empty">まだ切符が登録されていません。</div>';
+const recent=[...allTickets].sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,3);$('recentTickets').innerHTML=recent.length?recent.map(ticketCard).join(''):'<div class="empty">まだ切符が登録されていません。</div>';
 $('ticketList').innerHTML=list.length?list.map(ticketCard).join(''):'<div class="empty">該当する切符はありません。</div>';
 }
 function openForm(t){$('ticketForm').reset();pendingPhotos=[];$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','route','machine','trainName','seatType','date','price','memo'])$(k).value=t[k]??'';pendingPhotos=t.photos||[]}toggleCountry();$('modal').classList.remove('hidden')}
