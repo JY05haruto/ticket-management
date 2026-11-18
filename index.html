@@ -200,7 +200,7 @@ $('totalCount').textContent=allTickets.length;$('companyCount').textContent=new 
 $('listHeading').textContent='切符一覧';
 const recent=[...allTickets].sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,3);$('recentTickets').innerHTML=recent.length?recent.map(ticketCard).join(''):'<div class="empty">まだ切符が登録されていません。</div>';
 $('ticketList').innerHTML=!listSearched?'<div class="empty">検索すると切符が表示されます。</div>':list.length?list.map(ticketCard).join(''):'<div class="empty">該当する切符はありません。</div>';
-bindPhotoImageErrors($('recentTickets'));bindPhotoImageErrors($('ticketList'));
+bindPhotoImageErrors($('recentTickets'));bindPhotoImageErrors($('ticketList'));bindPhotoLightboxButtons($('recentTickets'));bindPhotoLightboxButtons($('ticketList'));
 }
 function updateCompanyHistory(){const history=[...new Set(allTickets.map(x=>(x.company||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));$('companyHistory').replaceChildren(...history.map(name=>{const option=document.createElement('option');option.value=name;return option}));return history}
 function showCompanySuggestions(){const box=$('companySuggestions'),q=$('company').value.trim().toLowerCase(),history=updateCompanyHistory().filter(name=>name.toLowerCase().includes(q));box.replaceChildren();if(!history.length){box.classList.add('hidden');return}for(const name of history){const button=document.createElement('button');button.type='button';button.textContent=name;button.addEventListener('mousedown',e=>e.preventDefault());button.addEventListener('click',()=>{$('company').value=name;box.classList.add('hidden')});box.append(button)}box.classList.remove('hidden')}
@@ -224,9 +224,10 @@ async function renderPhotoPreview(files=[]){
   const remove=document.createElement('button');remove.type='button';remove.className='btn danger photo-remove';remove.textContent='写真を削除';remove.dataset.photoKind=entry.kind;remove.dataset.photoIndex=String(entry.index);item.append(remove);box.append(item);
  }
 }
-window.openPhotoLightbox=function(src){if(!src)return;const viewer=$('photoLightbox'),image=$('photoLightboxImage');image.src=src;viewer.style.display='flex';viewer.style.visibility='visible';viewer.style.zIndex='99999';document.body.style.overflow='hidden'};
-function closePhotoLightbox(){const viewer=$('photoLightbox');viewer.style.display='none';viewer.style.visibility='hidden';$('photoLightboxImage').removeAttribute('src');document.body.style.overflow=''}
-['recentTickets','ticketList'].forEach(id=>$(id).addEventListener('click',e=>{const button=e.target.closest('.ticket-photo-open');if(!button)return;e.preventDefault();e.stopPropagation();const img=button.querySelector('img');if(img)openPhotoLightbox(img.currentSrc||img.src)},true));
+function openPhotoLightbox(src){if(!src)return;const viewer=$('photoLightbox'),image=$('photoLightboxImage');image.src=src;viewer.classList.add('open');viewer.style.display='flex';viewer.style.visibility='visible';viewer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+window.openPhotoLightbox=openPhotoLightbox;
+function closePhotoLightbox(){const viewer=$('photoLightbox');viewer.classList.remove('open');viewer.style.display='none';viewer.style.visibility='hidden';viewer.setAttribute('aria-hidden','true');$('photoLightboxImage').removeAttribute('src');document.body.style.overflow=''}
+function bindPhotoLightboxButtons(root){root.querySelectorAll('.ticket-photo-open').forEach(button=>{if(button.dataset.lightboxBound)return;button.dataset.lightboxBound='1';button.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const img=button.querySelector('img');const src=img?.getAttribute('src')||img?.currentSrc||img?.src||'';openPhotoLightbox(src)})})}
 $('photoLightboxClose').addEventListener('click',closePhotoLightbox);
 $('photoLightbox').addEventListener('click',e=>{if(e.target===$('photoLightbox'))closePhotoLightbox()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhotoLightbox()});
