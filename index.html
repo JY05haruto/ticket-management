@@ -137,9 +137,10 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 .ticket-photo-item img{display:block;width:100%;height:100%;object-fit:cover}
 .photo-zoom-btn{position:absolute;right:5px;bottom:5px;width:34px;height:34px;border:1px solid #fff9;border-radius:50%;background:#172235ed;color:#fff;display:grid;place-items:center;font-size:21px;line-height:1;padding:0;box-shadow:0 2px 8px #0008;touch-action:manipulation}
 
-.photo-lightbox{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:54px 14px 20px;background:rgba(0,0,0,.92)}
-.photo-lightbox.open{display:flex}
-.photo-lightbox img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:6px}
+.photo-lightbox{position:fixed!important;inset:0!important;width:100vw;height:100vh;height:100dvh;z-index:2147483647!important;display:none;align-items:center;justify-content:center;box-sizing:border-box;padding:calc(58px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom));background:rgba(0,0,0,.96);overscroll-behavior:contain;touch-action:pan-x pan-y}
+.photo-lightbox.open{display:flex!important;visibility:visible!important}
+.photo-lightbox img{display:block;max-width:calc(100vw - 28px);max-height:calc(100vh - 90px);max-height:calc(100dvh - 90px - env(safe-area-inset-top) - env(safe-area-inset-bottom));width:auto;height:auto;object-fit:contain;border-radius:6px;touch-action:pinch-zoom}
+.photo-lightbox-close{z-index:1;touch-action:manipulation}
 .photo-lightbox-close{position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;width:42px;height:42px;border:1px solid #fff8;border-radius:50%;background:#172235;color:#fff;font-size:30px;line-height:1;display:grid;place-items:center;padding:0}
 .photo-preview-item img,.thumbs img{cursor:zoom-in}
 .photo-preview-item .photo-remove{display:block;width:100%;white-space:nowrap;word-break:keep-all;text-align:center;padding:7px 4px;font-size:12px;line-height:1.3;margin-top:5px}
@@ -227,8 +228,10 @@ async function renderPhotoPreview(files=[]){
 }
 function openPhotoLightbox(src){if(!src)return;const viewer=$('photoLightbox'),image=$('photoLightboxImage');image.src=src;viewer.classList.add('open');viewer.style.display='flex';viewer.style.visibility='visible';viewer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 window.openPhotoLightbox=openPhotoLightbox;
+// Capture zoom taps globally for reliable Android WebView handling.
+document.addEventListener('click',e=>{const button=e.target.closest?.('.photo-zoom-btn');if(!button)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();const img=button.parentElement?.querySelector('img');const src=img?.getAttribute('src')||img?.currentSrc||img?.src||'';openPhotoLightbox(src)},true);
 function closePhotoLightbox(){const viewer=$('photoLightbox');viewer.classList.remove('open');viewer.style.display='none';viewer.style.visibility='hidden';viewer.setAttribute('aria-hidden','true');$('photoLightboxImage').removeAttribute('src');document.body.style.overflow=''}
-function bindPhotoLightboxButtons(root){root.querySelectorAll('.photo-zoom-btn').forEach(button=>{if(button.dataset.lightboxBound)return;button.dataset.lightboxBound='1';button.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const img=button.parentElement?.querySelector('img');const src=img?.getAttribute('src')||img?.currentSrc||img?.src||'';openPhotoLightbox(src)})})}
+function bindPhotoLightboxButtons(root){}
 $('photoLightboxClose').addEventListener('click',closePhotoLightbox);
 $('photoLightbox').addEventListener('click',e=>{if(e.target===$('photoLightbox'))closePhotoLightbox()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhotoLightbox()});
