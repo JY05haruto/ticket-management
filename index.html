@@ -34,7 +34,7 @@ img{max-width:100%;height:auto}
 .stat b{font-size:clamp(17px,5vw,21px)}
 .stat span{font-size:clamp(10px,2.8vw,12px)}
 .btn{padding:9px 11px}
-.dialog{padding:14px}.dialog-head{margin:-14px -14px 12px;padding:6px 14px 10px}
+.dialog{padding:14px}
 }
 @media(max-width:360px){
 .filters{grid-template-columns:minmax(0,1fr)}
@@ -88,18 +88,14 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 }
 .dialog-wrap .dialog{width:100%;max-width:100%;position:relative}
 .dialog-head{
-  position:sticky;
-  top:0;
-  z-index:20;
+  position:static;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  min-height:54px;
-  background:#122139;
-  padding:6px 18px 10px;
-  margin:-18px -18px 12px;
-  border-radius:13px 13px 0 0;
+  justify-content:flex-start;
+  min-height:0;
+  background:transparent;
+  padding:0;
+  margin:0 0 12px;
 }
 .dialog-head h3{
   margin:0;
@@ -107,25 +103,7 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
   line-height:1.3;
   font-weight:700;
 }
-.dialog-close{
-  position:static;
-  flex:0 0 auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:42px;
-  padding:0 12px;
-  margin:0;
-  background:transparent!important;
-  color:var(--ink);
-  border:0!important;
-  outline:0!important;
-  box-shadow:none!important;
-  border-radius:0;
-  font:inherit;
-  font-size:20px;
-  line-height:1.3;
-}
+.dialog-close{display:none}
 #modal #ticketForm{margin-top:0}
 #modal #ticketForm input:not([type="hidden"]),
 #modal #ticketForm select,
@@ -151,7 +129,7 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 
 
 </div>
-<div id="modal" class="modal hidden"><div class="dialog-wrap"><div class="dialog"><div class="dialog-head"><h3 id="formTitle">切符を追加</h3><button class="dialog-close" id="closeModal" type="button">閉じる</button></div><form id="ticketForm"><input type="hidden" id="ticketId"><div class="formgrid">
+<div id="modal" class="modal hidden"><div class="dialog-wrap"><div class="dialog"><div class="dialog-head"><h3 id="formTitle">切符を追加</h3></div><form id="ticketForm"><input type="hidden" id="ticketId"><div class="formgrid">
 <div class="field"><label>国内・海外</label><select id="region"><option value="国内">国内</option><option value="海外">海外</option></select></div>
 <div class="field"><label>種類</label><select id="type" required><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select></div>
 <div class="field company-field"><label>鉄道会社</label><input id="company" required autocomplete="off" placeholder="入力または履歴から選択"><datalist id="companyHistory"></datalist><div id="companySuggestions" class="company-suggestions hidden"></div><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
@@ -196,7 +174,7 @@ function showCompanySuggestions(){const box=$('companySuggestions'),q=$('company
 function openForm(t){$('ticketForm').reset();pendingPhotos=[];updateCompanyHistory();$('ticketId').value=t?.id||'';$('formTitle').textContent=t?'切符を編集':'切符を追加';if(t){for(const k of ['region','type','company','reservationService','place','country','trainName','seatType','trainName2','seatType2','date','price','memo'])$(k).value=t[k]??'';const r=getRouteParts(t);$('route1From').value=r.a;$('route1To').value=r.b;$('route2From').value=r.c||r.b;$('route2To').value=r.d;pendingPhotos=t.photos||[]}toggleCountry();updatePhotoSelection();$('modal').classList.remove('hidden');$('modal').scrollTop=0;document.querySelector('.dialog').scrollTop=0;window.scrollTo(0,0)}
 function syncSegment2From(){ $('route2From').value=$('route1To').value; }$('route1To').addEventListener('input',()=>{syncSegment2From();toggleSegment2Fields()});function toggleSegment2Fields(){const active=!!$('route2To').value.trim();$('segment2TrainFields').classList.toggle('hidden',!active)}$('route2From').addEventListener('input',toggleSegment2Fields);$('route2To').addEventListener('input',toggleSegment2Fields);function toggleCountry(){document.querySelectorAll('.overseas-field').forEach(x=>x.classList.toggle('hidden',$('region').value!=='海外'))}function $$(s){return [...document.querySelectorAll(s)]}
 let previewUrls=[];function updatePhotoSelection(){const files=[...$('photos').files,...$('cameraPhoto').files],count=pendingPhotos.length+files.length;$('photoSelectionInfo').textContent=count?count+'枚の写真を登録・選択中です。':'写真はまだ選択されていません。';renderPhotoPreview(files)}function renderPhotoPreview(files=[]){for(const url of previewUrls)URL.revokeObjectURL(url);previewUrls=[];const box=$('photoPreview');box.replaceChildren();const entries=pendingPhotos.map((p,i)=>({src:photoSrc(p),name:p.name||('登録済み写真 '+(i+1))}));for(const file of files){const src=URL.createObjectURL(file);previewUrls.push(src);entries.push({src,name:file.name})}if(!entries.length){const empty=document.createElement('div');empty.className='photo-preview-empty';empty.textContent='選択した画像のプレビューがここに表示されます。';box.append(empty);return}for(const entry of entries){const item=document.createElement('div');item.className='photo-preview-item';const img=document.createElement('img');img.src=entry.src;img.alt='切符画像のプレビュー';const label=document.createElement('span');label.textContent=entry.name;item.append(img,label);box.append(item)}}$('choosePhotosBtn').addEventListener('click',()=>$('photos').click());$('openCameraBtn').addEventListener('click',()=>$('cameraPhoto').click());$('photos').addEventListener('change',updatePhotoSelection);$('cameraPhoto').addEventListener('change',updatePhotoSelection);$('region').addEventListener('change',toggleCountry);$('company').addEventListener('focus',showCompanySuggestions);$('company').addEventListener('input',showCompanySuggestions);$('companySuggestions').addEventListener('mouseleave',()=>{});document.addEventListener('click',e=>{if(!e.target.closest('.company-field'))$('companySuggestions').classList.add('hidden')});
-$('addBtn').onclick=()=>openForm();$('closeModal').onclick=$('cancelBtn').onclick=()=>$('modal').classList.add('hidden');
+$('addBtn').onclick=()=>openForm();$('cancelBtn').onclick=()=>$('modal').classList.add('hidden');
 $('ticketForm').onsubmit=async e=>{e.preventDefault();const id=$('ticketId').value||crypto.randomUUID(),old=allTickets.find(t=>t.id===id);const photos=[...pendingPhotos];for(const input of [$('photos'),$('cameraPhoto')])for(const f of input.files){const data=await fileData(f);photos.push({name:f.name,data})}if(window.AndroidPhotoStore){for(const p of photos){if(p.data){const saved=AndroidPhotoStore.savePhoto(p.data,p.name||'ticket.jpg');if(saved){p.file=saved;delete p.data}}}}const item={id,created:old?.created||Date.now(),region:$('region').value,type:$('type').value,company:$('company').value.trim(),reservationService:$('reservationService').value,place:$('place').value.trim(),country:$('country').value.trim(),route1From:$('route1From').value.trim(),route1To:$('route1To').value.trim(),route2From:$('route2From').value.trim(),route2To:$('route2To').value.trim(),trainName:$('trainName').value.trim(),seatType:$('seatType').value.trim(),trainName2:$('trainName2').value.trim(),seatType2:$('seatType2').value.trim(),date:$('date').value,price:Number($('price').value)||0,memo:$('memo').value.trim(),photos};await dbPut(item);$('modal').classList.add('hidden');await refresh()};
 function fileData(f){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve({name:f.name,data:r.result});r.onerror=reject;r.readAsDataURL(f)})}
 $('recentTickets').onclick=$('ticketList').onclick=async e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');if(edit){const t=allTickets.find(x=>x.id===edit.dataset.edit);openForm(t)}if(del&&confirm('この切符を削除しますか？')){const target=allTickets.find(x=>x.id===del.dataset.delete);if(target&&window.AndroidPhotoStore)for(const p of (target.photos||[]))if(p.file)AndroidPhotoStore.deletePhoto(p.file);await dbDelete(del.dataset.delete);await refresh()}};
