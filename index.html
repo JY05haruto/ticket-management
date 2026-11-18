@@ -225,7 +225,7 @@ function closePhotoLightbox(){$('photoLightbox').classList.remove('open');$('pho
 $('photoLightboxClose').addEventListener('click',closePhotoLightbox);
 $('photoLightbox').addEventListener('click',e=>{if(e.target===$('photoLightbox'))closePhotoLightbox()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhotoLightbox()});
-function handleTicketPhotoTap(e){const target=e.target instanceof Element?e.target:null;const img=target?.closest('.thumbs img');if(!img||!e.currentTarget.contains(img))return;e.preventDefault();e.stopPropagation();openPhotoLightbox(img.currentSrc||img.src)}$('recentTickets').addEventListener('click',handleTicketPhotoTap);$('ticketList').addEventListener('click',handleTicketPhotoTap);
+function handleTicketPhotoTap(e){const target=e.target instanceof Element?e.target:null;const img=target?.closest('.thumbs img');if(!img||!document.contains(img))return;e.preventDefault();e.stopPropagation();openPhotoLightbox(img.currentSrc||img.src)}document.addEventListener('click',handleTicketPhotoTap,true);
 $('photoPreview').addEventListener('click',async e=>{
  const button=e.target.closest('[data-photo-kind]');if(!button)return;
  e.preventDefault();e.stopPropagation();
