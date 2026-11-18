@@ -79,8 +79,7 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 
 .route-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 .route-grid>.field{min-width:0}
-/* Modal close button and form alignment */
-/* Keep the dialog title and close control visible while the form scrolls. */
+/* Keep title and close action in one sticky, aligned header row. */
 .dialog-wrap{
   position:relative;
   width:min(620px,calc(100vw - 32px));
@@ -90,23 +89,41 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 .dialog-wrap .dialog{width:100%;max-width:100%;position:relative}
 .dialog-head{
   position:sticky;
-  top:-18px;
-  z-index:5;
+  top:-14px;
+  z-index:8;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:54px;
   background:#122139;
-  padding:8px 112px 12px 0;
-  margin:-8px 0 12px;
+  padding:6px 0 10px;
+  margin:0 0 12px;
+}
+.dialog-head h3{
+  margin:0;
+  font-size:20px;
+  line-height:1.3;
+  font-weight:700;
 }
 .dialog-close{
-  position:absolute;
-  top:14px;
-  right:14px;
-  z-index:8;
+  position:static;
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:0 12px;
+  margin:0;
   background:transparent!important;
   color:var(--ink);
   border:0!important;
   outline:0!important;
   box-shadow:none!important;
   border-radius:0;
+  font:inherit;
+  font-size:20px;
+  line-height:1.3;
 }
 #modal #ticketForm{margin-top:0}
 #modal #ticketForm input:not([type="hidden"]),
@@ -133,7 +150,7 @@ html,body{min-height:100%;padding-top:env(safe-area-inset-top)}
 
 
 </div>
-<div id="modal" class="modal hidden"><div class="dialog-wrap"><button class="btn dialog-close" id="closeModal" type="button">閉じる</button><div class="dialog"><div class="dialog-head"><h3 id="formTitle">切符を追加</h3></div><form id="ticketForm"><input type="hidden" id="ticketId"><div class="formgrid">
+<div id="modal" class="modal hidden"><div class="dialog-wrap"><div class="dialog"><div class="dialog-head"><h3 id="formTitle">切符を追加</h3><button class="dialog-close" id="closeModal" type="button">閉じる</button></div><form id="ticketForm"><input type="hidden" id="ticketId"><div class="formgrid">
 <div class="field"><label>国内・海外</label><select id="region"><option value="国内">国内</option><option value="海外">海外</option></select></div>
 <div class="field"><label>種類</label><select id="type" required><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select></div>
 <div class="field company-field"><label>鉄道会社</label><input id="company" required autocomplete="off" placeholder="入力または履歴から選択"><datalist id="companyHistory"></datalist><div id="companySuggestions" class="company-suggestions hidden"></div><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
