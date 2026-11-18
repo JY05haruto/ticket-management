@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - 'app/**'
+      - 'index.html'
+      - 'sw.js'
       - 'build.gradle'
       - 'settings.gradle'
       - '.github/workflows/android-apk.yml'
@@ -59,3 +61,5 @@ jobs:
 # Build trigger note: preserve photo previews after saving and editing
 
 # Build trigger note: load original private ticket photo bytes and isolate edit action
+
+# Build trigger note: move ticket photos from the native folder to private WebView storage
