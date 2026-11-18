@@ -65,6 +65,8 @@ class MainActivity : Activity() {
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.settings.databaseEnabled = true
+        // Always fetch the current GitHub Pages UI instead of a stale WebView cache.
+        webView.settings.cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE
         webView.settings.allowFileAccess = false
         webView.addJavascriptInterface(PhotoStore(), "AndroidPhotoStore")
         webView.webViewClient = WebViewClient()
@@ -87,7 +89,7 @@ class MainActivity : Activity() {
         }
         setContentView(webView)
         if (savedInstanceState == null) {
-            webView.loadUrl("https://jy05haruto.github.io/ticket-management/")
+            webView.loadUrl("https://jy05haruto.github.io/ticket-management/?v=20261118-3")
         } else {
             webView.restoreState(savedInstanceState)
         }
