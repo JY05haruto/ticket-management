@@ -16,7 +16,7 @@
 <div class="app">
 <header class="top"><div class="brand"><div class="logo">🎫</div><div><div class="eyebrow">RAILWAY COLLECTION</div><h1>切符コレクション</h1><small>MY TICKET ARCHIVE</small></div></div></header>
 <div class="stats"><div class="stat"><b id="totalCount">0</b><span>登録した切符</span></div><div class="stat"><b id="companyCount">0</b><span>鉄道会社</span></div><div class="stat"><b id="countryCount">0</b><span>国・地域</span></div></div>
-<div class="actions"><button class="btn primary" id="addBtn">＋ 切符を追加</button><button class="btn" id="backupBtn">↓ バックアップ</button><button class="btn" id="restoreBtn">↑ 復元</button><input id="restoreFile" type="file" accept="application/json" class="hidden"></div>
+<div class="actions"><button class="btn primary" id="addBtn">＋ 切符を追加</button><div class="filelinks"><button class="btn" id="backupBtn">↓ バックアップ</button><button class="btn" id="restoreBtn">↑ 復元</button></div><input id="restoreFile" type="file" accept="application/json" class="hidden"></div>
 <nav class="tabs" id="tabs"><button class="tab active" data-tab="all">すべて</button><button class="tab" data-tab="company">会社別</button><button class="tab" data-tab="place">発行場所別</button><button class="tab" data-tab="overseas">海外切符</button></nav>
 <section class="panel"><h3 id="listHeading">切符一覧</h3><div class="filters"><input id="search" placeholder="会社・駅・国・メモなどで検索"><select id="typeFilter"><option value="">すべての種類</option><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select><select id="sort"><option value="new">登録順</option><option value="date">利用・発行日順</option><option value="price">金額順</option></select></div></section>
 <div id="ticketList" class="grid"><div class="empty">まだ切符が登録されていません。<br>「切符を追加」からコレクションを作りましょう。</div></div>
