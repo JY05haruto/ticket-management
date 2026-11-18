@@ -26,7 +26,7 @@
 <div id="modal" class="modal hidden"><div class="dialog"><div class="dialog-head"><h3 id="formTitle">切符を追加</h3><button class="btn" id="closeModal">閉じる</button></div><form id="ticketForm"><input type="hidden" id="ticketId"><div class="formgrid">
 <div class="field"><label>国内・海外</label><select id="region"><option value="国内">国内</option><option value="海外">海外</option></select></div>
 <div class="field"><label>切符の種類 *</label><select id="type" required><option>乗車券</option><option>料金券</option><option>一葉券</option><option>指ノミ券</option><option>フリー切符</option></select></div>
-<div class="field"><label>鉄道会社・事業者 *</label><input id="company" required placeholder="例：相模鉄道"><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
+<div class="field"><label>鉄道会社 *</label><input id="company" required placeholder="例：相模鉄道"><small class="hint">※直通運転の場合は、発駅側の鉄道会社を入力してください。</small></div>
 <div class="field"><label>区間・券面の名称</label><input id="route" placeholder="例：横浜 → 海老名"></div>
 <div class="field"><label>列車名</label><input id="trainName" placeholder="例：特急○○号"></div>
 <div class="field"><label>席種</label><input id="seatType" placeholder="例：指定席・自由席・グリーン車"></div>
@@ -38,9 +38,8 @@
 <div class="field"><label>金額（円換算可）</label><input id="price" type="number" min="0" step="1" placeholder="例：480"></div>
 <div class="field wide"><label>メモ</label><textarea id="memo" placeholder="購入場所、思い出、補足など"></textarea></div>
 <div class="field wide"><label>切符の写真（表・裏・複数枚可）</label><input id="photos" type="file" accept="image/*" capture="environment" multiple><div class="notice">写真はアプリ内に保存されます。画像は端末容量を使用します。</div></div>
-<div class="field wide"><label>画像から文字を読み取る（試験機能）</label><button type="button" class="btn" id="ocrBtn">写真をOCRで読み取る</button><div class="notice" id="ocrStatus">読み取り結果を確認し、必要に応じて各項目を修正してください。初回は通信が必要です。</div></div>
+
 </div><div class="actions"><button class="btn primary" type="submit">保存する</button><button class="btn" type="button" id="cancelBtn">キャンセル</button></div></form></div></div>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
 const DB_NAME='ticket-log-db',STORE='tickets';let db,allTickets=[],activeTab='all',pendingPhotos=[];
 const $=id=>document.getElementById(id);
@@ -69,7 +68,6 @@ $('tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;active
 $('search').oninput=render;$('typeFilter').onchange=render;$('sort').onchange=render;
 $('backupBtn').onclick=()=>{const exportTickets=allTickets.map(t=>({...t,photos:(t.photos||[]).map(p=>({...p,data:p.data||(p.file&&window.AndroidPhotoStore?AndroidPhotoStore.getPhoto(p.file):undefined),file:undefined}))}));const blob=new Blob([JSON.stringify({app:'ticket-log',version:1,exportedAt:new Date().toISOString(),tickets:exportTickets})],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ticket-log-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
 $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.tickets))throw Error('形式が違います');if(!confirm(data.tickets.length+'件のデータを取り込みます。既存データと統合しますか？'))return;for(const t of data.tickets){if(t.id){if(window.AndroidPhotoStore){for(const p of (t.photos||[])){if(p.data){p.file=AndroidPhotoStore.savePhoto(p.data,p.name||'ticket.jpg');delete p.data}}}await dbPut(t)}}await refresh();alert('復元しました')}catch(err){alert('バックアップファイルを読み込めませんでした: '+err.message)}e.target.value=''};
-$('ocrBtn').onclick=async()=>{const f=$('photos').files[0];if(!f){$('ocrStatus').textContent='先に切符の写真を選択してください。';return}if(!window.Tesseract){$('ocrStatus').textContent='OCRライブラリを読み込めませんでした。通信状態を確認してください。';return}try{$('ocrBtn').disabled=true;$('ocrStatus').textContent='文字を読み取っています。写真によっては時間がかかります…';const result=await Tesseract.recognize(f,'jpn+eng',{logger:m=>{if(m.status)$('ocrStatus').textContent=m.status+(m.progress?' '+Math.round(m.progress*100)+'%':'')}});$('memo').value=($('memo').value?$('memo').value+'\n':'')+'【OCR読み取り結果】\n'+result.data.text.trim();$('ocrStatus').textContent='読み取り完了。結果をメモ欄に入れました。内容を確認・修正してください。'}catch(err){$('ocrStatus').textContent='読み取りに失敗しました。写真を鮮明にして再度お試しください。'}finally{$('ocrBtn').disabled=false}};
 async function refresh(){allTickets=await dbGet();if(window.AndroidPhotoStore){for(const t of allTickets){let changed=false;for(const p of (t.photos||[])){if(p.data){const saved=AndroidPhotoStore.savePhoto(p.data,p.name||'ticket.jpg');if(saved){p.file=saved;delete p.data;changed=true}}}if(changed)await dbPut(t)}}render()}
 (async()=>{try{db=await openDB();await refresh()}catch(e){alert('このブラウザでは端末内保存を利用できません。最新のChrome等で開いてください。')}})();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
